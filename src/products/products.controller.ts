@@ -7,49 +7,32 @@ import {
   Delete,
   Put,
 } from '@nestjs/common';
-
-// ========== Interfaces ==========
-interface ProductInterface {
-  id: number;
-  name: string;
-}
-// ==================================
-
-// ========== DTOs for file ==========
-class CreateProductDto {
-  name: string;
-}
-
-class UpdateProductDto {
-  name: string;
-}
-// ==================================
+import { ProductsService } from './products.service';
+import {
+  ProductInterface,
+  CreateProductDto,
+  UpdateProductDto,
+} from 'src/types/interfaces';
 
 @Controller('products')
 export class ProductsController {
-  private products: ProductInterface[] = [
-    { id: 1, name: 'Product 1' },
-    { id: 2, name: 'Product 2' },
-    { id: 3, name: 'Product 3' },
-    { id: 4, name: 'Product 4' },
-  ];
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get()
   getAllProducts(): ProductInterface[] {
-    return this.products;
+    return this.productsService.getAllItems();
   }
 
   @Get(':id')
   getSingleProduct(@Param('id') id: string): ProductInterface {
-    return this.products.find((product) => product.id === Number(id));
+    return this.productsService.getOneProduct(+id);
   }
 
   @Post()
   createProduct(
     @Body() CreateProductDto: CreateProductDto,
   ): ProductInterface[] {
-    this.products.push({ id: this.products.length + 1, ...CreateProductDto });
-    return this.products;
+    return this.productsService.createNewProduct(CreateProductDto);
   }
 
   @Put(':id')
@@ -57,23 +40,11 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() updateBody: UpdateProductDto,
   ): ProductInterface[] {
-    const productIndex = this.products.findIndex(
-      (prod) => prod.id === Number(id),
-    );
-
-    this.products[productIndex] = {
-      ...this.products[productIndex],
-      ...updateBody,
-    };
-
-    return this.products;
+    return this.productsService.updateOneProduct(+id, updateBody);
   }
 
   @Delete(':id')
   deleteOneProduct(@Param('id') id: string): ProductInterface[] {
-    this.products = this.products.filter(
-      (product) => product.id !== Number(id),
-    );
-    return this.products;
+    return this.productsService.deleteOneProduct(+id);
   }
 }
