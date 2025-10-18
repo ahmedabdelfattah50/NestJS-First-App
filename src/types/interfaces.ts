@@ -6,7 +6,3 @@ export interface ProductInterface {
 export interface CreateProductDto {
   name: string;
 }
-
-export interface UpdateProductDto {
-  name: string;
-}
