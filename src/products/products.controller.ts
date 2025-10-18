@@ -6,13 +6,14 @@ import {
   Body,
   Delete,
   Put,
+  ParseIntPipe,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import {
-  ProductInterface,
-  CreateProductDto,
-  UpdateProductDto,
-} from 'src/types/interfaces';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductInterface } from 'src/types/interfaces';
 
 @Controller('products')
 export class ProductsController {
@@ -24,27 +25,28 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getSingleProduct(@Param('id') id: string): ProductInterface {
-    return this.productsService.getOneProduct(+id);
+  getSingleProduct(@Param('id', ParseIntPipe) id: number): ProductInterface {
+    return this.productsService.getOneProduct(id);
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createProduct(
-    @Body() CreateProductDto: CreateProductDto,
+    @Body() createProductDto: CreateProductDto,
   ): ProductInterface[] {
-    return this.productsService.createNewProduct(CreateProductDto);
+    return this.productsService.createNewProduct(createProductDto);
   }
 
   @Put(':id')
   updateOneProduct(
-    @Param('id') id: string,
-    @Body() updateBody: UpdateProductDto,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateProductDto: UpdateProductDto,
   ): ProductInterface[] {
-    return this.productsService.updateOneProduct(+id, updateBody);
+    return this.productsService.updateOneProduct(id, updateProductDto);
   }
 
   @Delete(':id')
-  deleteOneProduct(@Param('id') id: string): ProductInterface[] {
-    return this.productsService.deleteOneProduct(+id);
+  deleteOneProduct(@Param('id', ParseIntPipe) id: number): ProductInterface[] {
+    return this.productsService.deleteOneProduct(id);
   }
 }

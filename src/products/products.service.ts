@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ProductInterface,
-  CreateProductDto,
-  UpdateProductDto,
-} from 'src/types/interfaces';
+import { ProductInterface, CreateProductDto } from 'src/types/interfaces';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -29,7 +26,7 @@ export class ProductsService {
 
   updateOneProduct(
     id: number,
-    productBody: UpdateProductDto,
+    UpdateProductDto: UpdateProductDto,
   ): ProductInterface[] {
     const productIndex = this.products.findIndex(
       (prod) => prod.id === Number(id),
@@ -37,7 +34,7 @@ export class ProductsService {
 
     this.products[productIndex] = {
       ...this.products[productIndex],
-      ...productBody,
+      ...UpdateProductDto,
     };
 
     return this.products;
